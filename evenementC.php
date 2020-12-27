@@ -1,13 +1,36 @@
 <?PHP
 	include "../config.php";
 	require_once '../Model/evenement.php';
-
+	require_once '../Model/reservation.php';
+	require_once '../Model/client.php';
 	class evenementC {
+
+		function ajouterreservation($ev){
+			$sql="INSERT INTO reservation (Type_de_paiment, Num_de_la_carte, Code_de_la_carte,Person,Date_dexpiration,Ticket,id,idu) 
+			VALUES (:Type_de_paiment, :Num_de_la_carte,:Code_de_la_carte,:Person,:Date_dexpiration,:Ticket,:id,:idu)";
+			$db = config::getConnexion();
+			try{
+				$query = $db->prepare($sql);
+				
+				$query->execute([
+					'Type_de_paiment' => $ev->getType_de_paiment(),
+					'Num_de_la_carte' => $ev->getNum_de_la_carte(),
+					'Code_de_la_carte' => $ev->getCode_de_la_carte(),
+                    'Person' => $ev->getPerson(),
+                    'Date_dexpiration' => $ev->getDate_dexpiration(),
+					'Ticket' => $ev->getTicket(),
+					
+					
+				]);			
+			}
+			catch (Exception $e){
+				echo 'Erreur: '.$e->getMessage();
+			}			
+		} 
 		
 		function ajouterevenement($ev){
 			$sql="INSERT INTO evenement (Nom, Date, Prix, Description) 
 			VALUES (:Nom,:Date,:Prix, :Description)";
-		  // WHERE Date BETWEEN '2020-12- 00:00:00' AND '2021-15-12'
 			$db = config::getConnexion();
 			try{
 				$query = $db->prepare($sql);
@@ -27,7 +50,7 @@
 		
 		function afficherevenements(){
 			
-			$sql="SELECT * FROM evenement ORDER BY Nom";
+			$sql="SELECT * FROM evenement";
 			$db = config::getConnexion();
 			try{
 				$liste = $db->query($sql);
@@ -51,6 +74,24 @@
 				die('Erreur: '.$e->getMessage());
 			}
 		}
+
+	
+
+		function recupererreservation($id){
+			$sql="SELECT * from reservation r,evenement e where e.id=$id";
+			$db = config::getConnexion();
+			try{
+				$query=$db->prepare($sql);
+				$query->execute();
+
+				$user=$query->fetch();
+				return $user;
+			}
+			catch (Exception $e){
+				die('Erreur: '.$e->getMessage());
+			}
+		}
+
 		function recupererevenement($id){
 			$sql="SELECT * from evenement where id=$id";
 			$db = config::getConnexion();
@@ -66,31 +107,6 @@
 			}
 		}
 
-		function modifierevenement($evenement, $id){
-			try {
-				$db = config::getConnexion();
-				$query = $db->prepare(
-					'UPDATE evenement SET 
-						Nom = :Nom, 
-						Date = :Date,
-						Prix = :Prix,
-						Description = :Description
-						
-					WHERE id = :id'
-				);
-				$query->execute([
-					'Nom' => $evenement->getNom(),
-					'Date' => $evenement->getDate(),
-					'Prix' => $evenement->getPrix(),
-					'Description' => $evenement->getDescription(),
-				
-					'id' => $id
-				]);
-				echo $query->rowCount() . " records UPDATED successfully <br>";
-			} catch (PDOException $e) {
-				$e->getMessage();
-			}
-		}
 		
 		function afficherreservation(){
 			
@@ -104,39 +120,38 @@
 				die('Erreur: '.$e->getMessage());
 			}	
 		}
-	
-		
-		public function rechercherevenement($Nom) {            
-            $sql = "SELECT * from evenement where Nom=:Nom"; 
-            $db = config::getConnexion();
-            try {
-                $query = $db->prepare($sql);
-                $query->execute([
-                    'Nom' => $evenement->getNom(),
-                ]); 
-                $liste = $query->fetchAll(); 
-                return $liste;
+		       function connexionUser($Email,$password){
+				//$sql="INSERT INTO client (Email, password) 
+				//VALUES (:Email, :password)";
+			$sql="SELECT * FROM client WHERE Email='" . $Email . "' and password = '". $password."'";
+			$db = config::getConnexion();
+			try{
+				$query = $db->prepare($sql);
+				
+				
+					$query=$db->prepare($sql);
+					$query->execute();
+					$count=$query->rowCount();
+                if($count==0) {
+                    $message = "pseudo ou le mot de passe est incorrect";
+                } else {
+                    $x=$query->fetch();
+                    $message = $x['role'];
+                }
             }
-            catch (PDOException $e) {
-                $e->getMessage();
-            }
+			catch (Exception $e){
+				$message= " ".$e->getMessage();
+		}
+          return $message;
         }
-		public function getevenementByNom($Nom) {
-            try {
-                $db = config:: getConnexion();
-                $query = $db->prepare(
-                    'SELECT * FROM evenement WHERE Nom = :Nom'
-                );
-                $query->execute([
-                    'Nom' => $Nom
-                ]);
-                return $query->fetch();
-            } catch (PDOException $e) {
-                $e->getMessage();
-            }
-        }
-          
-		
 
-	}
+
+
+
+
+				
+		}
+		
+	
+
 ?>
