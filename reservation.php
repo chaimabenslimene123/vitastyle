@@ -7,29 +7,21 @@
 		private  $Code_de_la_carte = null;
 		private  $Person = null;
         private  $Date_dexpiration = null;
-		private  $Ticket = null;
-		private  $id = null;
+        private  $Ticket = null;
 		
 
-		function __construct( string $Type_de_paiment ,string $Num_de_la_carte , string $Code_de_la_carte,int $Person ,string $Date_dexpiration,string $Ticket,int $id )
+		function __construct( string $Type_de_paiment ,string $Num_de_la_carte , string $Code_de_la_carte,int $Person ,string $Date_dexpiration,string $Ticket )
 		{
 			$this->Type_de_paiment =$Type_de_paiment ;
 			$this->Num_de_la_carte =$Num_de_la_carte ;
 			$this->Code_de_la_carte =$Code_de_la_carte;
 			$this->Person=$Person;
             $this->Date_dexpiration=$Date_dexpiration;
-			$this->Ticket=$Ticket;
-			$this->id=$id;
+            $this->Ticket=$Ticket;
 
 		}
 		function getidr(): int{
 			return $this->idr;
-		}
-		function getid(): int{
-			return $this->id;
-		}
-		function setid(int $id): void{
-			$this->id=$id;
 		}
 		function getType_de_paiment(): string{
 			return $this->Type_de_paiment;
